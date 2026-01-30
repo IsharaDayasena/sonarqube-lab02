@@ -1,4 +1,4 @@
-package main.java.com.example;
+package com.example;
 
 public class App {
 
@@ -10,7 +10,7 @@ public class App {
 
         UserService service = new UserService();
         service.findUser("admin");
-        service.deleteUser("admin");
+        
     }
 }
 
