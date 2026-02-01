@@ -1,44 +1,30 @@
-package com.example;
+package main.java.com.example;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.Statement;
 
 public class UserService {
 
-    // Better: avoid hardcoding in real systems (use env variables)
+    // SECURITY ISSUE: Hardcoded credentials
     private String password = "admin123";
 
-    // FIXED: specific exception + no SQL injection + auto-close resources
-    public void findUser(String username) throws SQLException {
+    // VULNERABILITY: SQL Injection
+    public void findUser(String username) throws Exception {
 
-        String url = "jdbc:mysql://localhost/db";
-        String query = "SELECT id, email FROM users WHERE name = ?";
+        Connection conn =
+            DriverManager.getConnection("jdbc:mysql://localhost/db",
+                    "root", password);
 
-        try (Connection conn = DriverManager.getConnection(url, "root", password);
-             PreparedStatement ps = conn.prepareStatement(query)) {
+        Statement st = conn.createStatement();
 
-            ps.setString(1, username);
-            ps.executeQuery();
-        }
+        String query =
+            "SELECT * FROM users WHERE name = '" + username + "'";
+
+        st.executeQuery(query);
     }
 
-    // EVEN WORSE issue FIXED
-    public void deleteUser(String username) throws SQLException {
-
-        String url = "jdbc:mysql://localhost/db";
-        String query = "DELETE FROM users WHERE name = ?";
-
-        try (Connection conn = DriverManager.getConnection(url, "root", password);
-             PreparedStatement ps = conn.prepareStatement(query)) {
-
-            ps.setString(1, username);
-            ps.executeUpdate();
-        }
-    }
-
-    // You can remove this if Sonar flags it
+    // SMELL: Unused method
     public void notUsed() {
         System.out.println("I am never called");
     }
